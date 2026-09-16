@@ -20,8 +20,8 @@ x1=1000
 y1=1000
 x=2000
 y=1250
-gamerun=True
 starter=True
+alive=True
 bullet_list = []
 GREEN = (  0, 255,   0)
 RED = (  255, 0,   0)
@@ -62,60 +62,34 @@ while running:
     # Fill the screen with an RGB color (Red, Green, Blue)
     def drawAliens():
         print()
-    def Start():
-        global starter
-        screen.fill((0, 0, 0))
-        pygame.draw.rect(screen, GREEN, [x1-200, y1-10, 600, 200])
-        screen.blit(text2,(0, 400))
-        screen.blit(text,(x1-150, y1-10))
-        mouse=pygame.mouse.get_pressed()
-        #check to see if the left mouse button was pressed
-        mouse=pygame.mouse.get_pressed()
-        if mouse[0]:
-            mouse_position=pygame.mouse.get_pos()
-            if mouse_position[0]>800 and mouse_position[0]<1400 and mouse_position[1]>990 and mouse_position[1]<1190:
-                starter=False
-                Game()
-    
     def Game():
-        global starter
-        global x1, y1, bullet_list
-        screen.fill((0, 0, 0))
-        pygame.draw.rect(screen, GREEN, [x1-200, y1-10, 600, 200])
-        screen.blit(text2,(0, 400))
-        screen.blit(text,(x1-150, y1-10))
-        mouse=pygame.mouse.get_pressed()
-        #check to see if the left mouse button was pressed
-        mouse=pygame.mouse.get_pressed()
-        if mouse[0]:
-            mouse_position=pygame.mouse.get_pos()
-            if mouse_position[0]>800 and mouse_position[0]<1400 and mouse_position[1]>990 and mouse_position[1]<1190:
-                starter=False
-                pressed = pygame.key.get_pressed()
-                if pressed[pygame.K_a]:
-                    x1 = x1 - 8
-                    print(x1)
-                if pressed[pygame.K_d]:
-                    x1 = x1 + 8
-                    print(x1)
-                if pressed[pygame.K_w]:
-                    y1 = y1 - 8
-                    print(y1)
-                if pressed[pygame.K_s]:
-                    y1 = y1 + 8
-                    print(y1)
+        if alive:
+            global x1, y1, bullet_list
+            pressed = pygame.key.get_pressed()
+            if pressed[pygame.K_a]:
+                x1 = x1 - 8
                 print(x1)
+            if pressed[pygame.K_d]:
+                x1 = x1 + 8
+                print(x1)
+            if pressed[pygame.K_w]:
+                y1 = y1 - 8
                 print(y1)
-                
-                if pressed[pygame.K_SPACE]:
-                    bullet_list.append((x1+85 , y1-10))  
-                screen.fill((0, 0, 0))
-                screen.blit(Ship, (x1, y1))      
-                print("in game") 
+            if pressed[pygame.K_s]:
+                y1 = y1 + 8
+                print(y1)
+            print(x1)
+            print(y1)
+            
+            if pressed[pygame.K_SPACE]:
+                bullet_list.append((x1+85 , y1-10))  
+            screen.fill((0, 0, 0))
+            screen.blit(Ship, (x1, y1))              
+        
 
     # Update the full display Surface to the screen
-    if starter==True:
-        Game()
+
+    Game()
     pygame.display.flip()
 
     # --- Frame Rate Cap ---
