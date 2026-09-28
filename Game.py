@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 
 pygame.init()
 
@@ -27,8 +28,12 @@ starter = True
 alive = True
 
 bullet_list = []
+enemy_list=[]
 BULLET_SPEED = 15
 SHOOT_COOLDOWN = 15   
+ENEMY_SPEED=5
+ENEMY_COOLDOWN=50
+spawn_timer=0
 shoot_timer = 0
 
 GREEN = (0, 255, 0)
@@ -58,17 +63,29 @@ def draw_bullets():
     for bullet in bullet_list:
         screen.blit(Bullet, (bullet[0], bullet[1]))
 
+def create_enemys(ranx):
+    enemy_list.append([ranx, 0])
 
-def draw_aliens():
-    pass 
+def update_enemy():
+    for enemy in enemy_list:
+        enemy[1]+= ENEMY_SPEED
+    enemy_list[:] = [e for e in enemy_list if e[1]]
 
+def draw_enemys():
+    for enemy in enemy_list:
+        screen.blit(Alien1, (enemy[0], enemy[1]))
 
 def game():
-    global x1, y1, shoot_timer
+    global x1, y1, shoot_timer, spawn_timer
 
     if not alive:
         return
-
+    if spawn_timer > 0:
+        spawn_timer -= 1
+    if len(enemy_list)<=42 and spawn_timer==0:
+        ranx = random.randint(0, 1750)
+        create_enemys(ranx)
+        spawn_timer = ENEMY_COOLDOWN
     pressed = pygame.key.get_pressed()
     if pressed[pygame.K_a]:
         x1 -= 8
@@ -85,10 +102,11 @@ def game():
         shoot_timer = SHOOT_COOLDOWN
 
     update_bullets()
-
+    update_enemy()
     screen.fill((0, 0, 0))
-    draw_aliens()
+    
     draw_bullets()
+    draw_enemys()
     screen.blit(Ship, (x1, y1))
 
 
