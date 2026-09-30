@@ -37,7 +37,7 @@ ENEMY_SPEED=2.5
 ENEMY_COOLDOWN=50
 spawn_timer=0
 shoot_timer = 0
-
+first=True
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
@@ -100,23 +100,11 @@ def death():
         pygame.draw.rect(screen, GREEN, [x2, y2, 600, 200])
         screen.blit(text,(x2, y2))
         pygame.display.update()
-        print("before click")
         mouse=pygame.mouse.get_pressed()
-        print(mouse[0])
         if mouse[0] and alive==False:
-            print("in mouse[0]")
-            print(x2)
-            print(x2+600)
-            print(y2)
-            print(y2+200)
             mouse_position=pygame.mouse.get_pos()
-            print("Mouse pos")
-            print(mouse_position[0])
-            print(mouse_position[1])
             if mouse_position[0]>x2 and mouse_position[0]<x2+600 and mouse_position[1]>y2 and mouse_position[1]<y2+200 and event.type==pygame.MOUSEBUTTONDOWN:
                 alive=True
-                print("alive")
-                print(alive)
                 bullet_list=[]
                 enemy_list=[]
                 screen.fill((0, 0, 0))
@@ -124,10 +112,27 @@ def death():
                 y1 = 1000
                 screen.blit(Ship, (x1, y1))
                 return alive
+def start():
+    global first
+    if first:
+        screen.fill((0, 0, 0))
+        screen.blit(text2, (75, 500))
+        pygame.draw.rect(screen, GREEN, [x2, y2, 600, 200])
+        screen.blit(text,(x2, y2))
+        pygame.display.update()
+        mouse=pygame.mouse.get_pressed()
+        if mouse[0] and first:
+            mouse_position=pygame.mouse.get_pos()
+            if mouse_position[0]>x2 and mouse_position[0]<x2+600 and mouse_position[1]>y2 and mouse_position[1]<y2+200 and event.type==pygame.MOUSEBUTTONDOWN:
+                first=False
+                screen.fill((0, 0, 0))
+                return first
                 
 def game():
     global x1, y1, shoot_timer, spawn_timer, alive
-
+    if first:
+        start()
+        return
     if not alive:
         death()
         return
