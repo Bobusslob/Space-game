@@ -28,7 +28,7 @@ x2 = 725
 y2 = 800
 starter = True
 alive = True
-
+score=0
 bullet_list = []
 enemy_list=[]
 BULLET_SPEED = 15
@@ -41,7 +41,7 @@ first=True
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
-
+font3 = pygame.font.SysFont("comicsansms", 200)
 font = pygame.font.SysFont("comicsansms", 325)
 font2 = pygame.font.SysFont("comicsansms", 400)
 text = font.render("Start", True, (255, 255, 255))
@@ -77,7 +77,7 @@ def update_enemy():
     enemy_list[:] = [e for e in enemy_list if e[1]]
 
 def draw_enemys():
-    global bullet_list, bullet
+    global bullet_list, bullet,score
     for enemy in enemy_list:
         screen.blit(Alien1, (enemy[0], enemy[1]))
         enemy_rect=Alien1.get_rect(topleft=(enemy[0], enemy[1]))
@@ -86,17 +86,19 @@ def draw_enemys():
             if enemy_rect.colliderect(bullet_rect):
                 enemy_list.remove(enemy)
                 bullet_list.remove(bullet)
+                score+=300
                 break
         if enemy_rect.colliderect(Ship.get_rect(topleft=(x1, y1))):
             global alive
             alive = False
             break
 def death():
-    global alive,bullet_list, enemy_list,x1,y1
+    global alive,bullet_list, enemy_list,x1,y1,score
     if alive==False:
         screen.fill((0, 0, 0))
         game_over_text = font.render("Game Over", True, (255, 255, 255))
-        screen.blit(game_over_text, (450, 500))
+        screen.blit(game_over_text, (450,300))
+        screen.blit(font.render(f"Score: {score}", True, (255, 255, 255)), (500, 525))
         pygame.draw.rect(screen, GREEN, [x2, y2, 600, 200])
         screen.blit(text,(x2, y2))
         pygame.display.update()
@@ -107,6 +109,7 @@ def death():
                 alive=True
                 bullet_list=[]
                 enemy_list=[]
+                score=0
                 screen.fill((0, 0, 0))
                 x1 = 1000
                 y1 = 1000
@@ -164,6 +167,7 @@ def game():
     draw_bullets()
     draw_enemys()
     screen.blit(Ship, (x1, y1))
+    screen.blit(font3.render(f"Score: {score}", True, (255, 255, 255)), (10, 10))
         
 
 running = True
