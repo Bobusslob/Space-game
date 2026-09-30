@@ -45,6 +45,7 @@ font3 = pygame.font.SysFont("comicsansms", 200)
 font = pygame.font.SysFont("comicsansms", 325)
 font2 = pygame.font.SysFont("comicsansms", 400)
 text = font.render("Start", True, (255, 255, 255))
+text3 = font3.render("Save Score", True, (255, 255, 255))
 text2 = font2.render("SPACE GAME", True, (255, 255, 255))
 
 clock = pygame.time.Clock()
@@ -88,10 +89,11 @@ def draw_enemys():
                 bullet_list.remove(bullet)
                 score+=300
                 break
-        if enemy_rect.colliderect(Ship.get_rect(topleft=(x1, y1))):
+        if enemy_rect.colliderect(Ship.get_rect(topleft=(x1, y1))) or enemy[1] > 1250:
             global alive
             alive = False
             break
+
 def death():
     global alive,bullet_list, enemy_list,x1,y1,score
     if alive==False:
@@ -101,6 +103,9 @@ def death():
         screen.blit(font.render(f"Score: {score}", True, (255, 255, 255)), (500, 525))
         pygame.draw.rect(screen, GREEN, [x2, y2, 600, 200])
         screen.blit(text,(x2, y2))
+
+        pygame.draw.rect(screen, GREEN, [x2, y2+250, 750, 150])
+        screen.blit(text3,(x2, y2+250))
         pygame.display.update()
         mouse=pygame.mouse.get_pressed()
         if mouse[0] and alive==False:
