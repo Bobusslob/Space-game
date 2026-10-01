@@ -1,7 +1,7 @@
 import pygame
 import sys
 import random
-
+import requests
 pygame.init()
 
 Ship = pygame.image.load("Assets/Ship.png")
@@ -38,6 +38,8 @@ ENEMY_COOLDOWN=50
 spawn_timer=0
 shoot_timer = 0
 first=True
+saving=False
+username=""
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
@@ -49,8 +51,17 @@ text3 = font3.render("Save Score", True, (255, 255, 255))
 text2 = font2.render("SPACE GAME", True, (255, 255, 255))
 
 clock = pygame.time.Clock()
-
-
+def send(user, score):
+    url = "http://127.0.0.1:5000/api/scores"
+    payload = {"username": user, "score": score}
+    try:
+        response = requests.post(url, json=payload, timeout=3)
+        if response.status_code == 200:
+            print("Data synced")
+        else:
+            print(f"Server replied with {response.status_code}")
+    except requests.RequestException as e:
+        print("Could not save score:", e)
 def create_bullet(x, y):
     global bullet_list
     bullet_list.append([x, y])
@@ -74,8 +85,8 @@ def create_enemys(ranx):
 def update_enemy():
     for enemy in enemy_list:
         enemy[1]+= ENEMY_SPEED
-        
-    enemy_list[:] = [e for e in enemy_list if e[1]]
+
+    enemy_list[:] = [e for e in enemy_list if e[1] <= 1250]
 
 def draw_enemys():
     global bullet_list, bullet,score
@@ -93,9 +104,23 @@ def draw_enemys():
             global alive
             alive = False
             break
+def save(events):
+    global saving, username
+    for event in events:
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                username = username[:-1]
+            elif event.key == pygame.K_RETURN:
+                send(username, score)
+                print("Saved Score")
+                saving = False
+            else:
+                username += event.unicode
 
-def death():
-    global alive,bullet_list, enemy_list,x1,y1,score
+    screen.fill((0, 0, 0))
+    screen.blit(font.render(f"name: {username}", True, (255, 255, 255)), (0, 525))
+def death(events):
+    global alive,bullet_list, enemy_list,x1,y1,score,saving
     if alive==False:
         screen.fill((0, 0, 0))
         game_over_text = font.render("Game Over", True, (255, 255, 255))
@@ -120,7 +145,13 @@ def death():
                 y1 = 1000
                 screen.blit(Ship, (x1, y1))
                 return alive
-def start():
+        if mouse[0] and alive==False:
+            mouse_position=pygame.mouse.get_pos()
+            if mouse_position[0]>x2 and mouse_position[0]<x2+750 and mouse_position[1]>y2+250 and mouse_position[1]<y2+350 and event.type==pygame.MOUSEBUTTONDOWN:
+                saving=True
+                print("clicked save")
+                return saving
+def start(events):
     global first
     if first:
         screen.fill((0, 0, 0))
@@ -136,13 +167,16 @@ def start():
                 screen.fill((0, 0, 0))
                 return first
                 
-def game():
+def game(events):
     global x1, y1, shoot_timer, spawn_timer, alive
     if first:
-        start()
+        start(events)
+        return
+    if saving:
+        save(events)
         return
     if not alive:
-        death()
+        death(events)
         return
     if spawn_timer > 0:
         spawn_timer -= 1
@@ -164,6 +198,9 @@ def game():
     if pressed[pygame.K_SPACE] and shoot_timer == 0:
         create_bullet(x1 + 85, y1 - 10)
         shoot_timer = SHOOT_COOLDOWN
+    if pressed[pygame.K_ESCAPE]:
+        pygame.quit()
+        sys.exit()
     
     update_bullets()
     update_enemy()
@@ -176,19 +213,20 @@ def game():
         
 
 running = True
+running = True
 while running:
-
-    for event in pygame.event.get():
+    events = pygame.event.get()
+    for event in events:
         if event.type == pygame.QUIT:
             running = False
 
-    game()
+    game(events)
 
 
     pygame.display.flip()
 
 
-    clock.tick(60)
+    clock.tick(120)
 
 
 pygame.quit()
