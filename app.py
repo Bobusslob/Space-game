@@ -22,7 +22,7 @@ init_db()
 def leaderboard():
     with sqlite3.connect(DB) as conn: 
         data = conn.execute(
-            'SELECT username, score FROM game_scores ORDER BY SCORE DESC LIMIT 20'
+            'SELECT username, score FROM game_scores ORDER BY SCORE DESC LIMIT 5'
         ).fetchall()
     return render_template('leaderboard.html',data=data)
 
